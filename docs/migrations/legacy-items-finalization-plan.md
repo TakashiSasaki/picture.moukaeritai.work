@@ -42,3 +42,32 @@ Given the tiny dataset size (2 items), we adopt a pragmatic approach to previous
 *   **`bluetoothTags`:** Do not implement a full Bluetooth global identifier migration for these two items. Instead, preserve `bluetoothTags` as a raw legacy snapshot (e.g., in a secure archive or as a `legacy.bluetoothTagsSnapshot` metadata field if manual migration is performed). Bluetooth global identity semantics can be implemented later.
 *   **`tagType`:** Preserve `tagType` as raw and normalized legacy metadata.
 *   **Conclusion:** Preserving raw legacy metadata is sufficient to prevent data loss and unblock normal operation on the normalized schema. Future Bluetooth support may map these snapshots into `identifiers(kind="bluetooth")` and bindings, but that automated translation is not required for this finalization.
+
+## Read-only audit helper
+
+You can run a read-only audit to assist in gathering information for the field verification and classification checklist. This script uses application credentials to fetch live production data, but strictly prevents writes, deletes, and deploys. The tool does not perform migrations.
+
+**Command Example:**
+
+```bash
+cd functions
+npm ci
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json npm run audit:legacy-items -- <legacyItemId1> <legacyItemId2>
+```
+
+**JSON Output Example:**
+
+```bash
+npm run audit:legacy-items -- --json <legacyItemId1> <legacyItemId2>
+```
+
+**Markdown Output Example:**
+
+```bash
+npm run audit:legacy-items -- --markdown <legacyItemId1> <legacyItemId2>
+```
+
+**Warnings:**
+* The audit helper strictly operates in a read-only manner.
+* The script redacts raw IDs where possible, but still outputs structured production data summaries. Do not commit outputs if they contain production identifiers or other sensitive data.
+* Executing this tool alone does not finalize the legacy items. It only generates the evidence checklist to assist the manual procedure.

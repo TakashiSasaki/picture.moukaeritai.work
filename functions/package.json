@@ -7,6 +7,8 @@
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
     "test": "npx --yes tsx test-client-ip.ts",
+    "audit:legacy-items": "node scripts/audit-legacy-items.mjs",
+    "audit:legacy-items": "node scripts/audit-legacy-items.mjs",
     "deploy": "firebase deploy --only functions:getAppMetrics,functions:identifyMatches,functions:describeImage,functions:getClientIp,functions:migrateInventoryModel,functions:scanExecuteImportedObservationBatch --project moukaeritaid",
     "logs": "firebase functions:log"
   },
@@ -16,14 +18,15 @@
   "main": "lib/index.js",
   "dependencies": {
     "@google-cloud/monitoring": "^4.1.0",
-    "@google/genai": "^2.0.1",
+    "@google/genai": "^1.0.0",
     "firebase-admin": "^13.9.0",
     "firebase-functions": "^7.2.5",
     "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@types/uuid": "^10.0.0",
-    "typescript": "^4.9.0"
+    "typescript": "^5.9.3",
+    "zod": "^3.22.4"
   },
   "private": true
 }

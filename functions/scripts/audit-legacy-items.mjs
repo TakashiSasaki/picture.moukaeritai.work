@@ -2,6 +2,12 @@ import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { createRequire } from 'module';
 import fs from 'fs';
+import {
+  parseAuditArgs,
+  shapeAuditSummary,
+  formatJsonOutput,
+  formatMarkdownOutput
+} from './audit-helpers.mjs';
 
 const require = createRequire(import.meta.url);
 const appletConfig = JSON.parse(fs.readFileSync('../firebase-applet-config.json', 'utf8'));
@@ -33,102 +39,128 @@ WriteBatch.prototype.commit = () => { throw new Error('Write operations are stri
 /**
  * @param {string} legacyItemId
  */
-async function auditLegacyItem(legacyItemId) {
-  console.log(`\n======================================================`);
-  console.log(`Auditing legacy item: ${legacyItemId}`);
-  console.log(`======================================================\n`);
-
+async function getLegacyItemData(legacyItemId) {
   const itemRef = db.collection('items').doc(legacyItemId);
   const itemDoc = await itemRef.get();
+  return itemDoc.exists ? itemDoc.data() : null;
+}
 
-  if (!itemDoc.exists) {
-    console.error(`❌ Legacy item ${legacyItemId} not found.`);
-    return;
+async function getNormalizedObjectData(objectId) {
+  const objectDoc = await db.collection('objects').doc(objectId).get();
+  return objectDoc.exists ? objectDoc.data() : null;
+}
+
+async function getCollectionSize(collectionName, objectId) {
+  const snapshot = await db.collection(collectionName)
+    .where('objectId', '==', objectId)
+    .get();
+  return snapshot.size;
+}
+
+async function auditLegacyItem(legacyItemId) {
+  const objectId = legacyItemId.toUpperCase();
+
+  const legacyData = await getLegacyItemData(legacyItemId);
+  const objData = await getNormalizedObjectData(objectId);
+
+  const bindingsSize = await getCollectionSize('objectIdentifierBindings', objectId);
+  const imagesSize = await getCollectionSize('objectImages', objectId);
+  const eventsSize = await getCollectionSize('objectEvents', objectId);
+
+  return shapeAuditSummary(
+    legacyItemId,
+    objectId,
+    legacyData,
+    objData,
+    bindingsSize,
+    imagesSize,
+    eventsSize
+  );
+}
+
+function printHumanReadable(summary) {
+  console.log(`\n======================================================`);
+  console.log(`Auditing legacy item: ${summary.legacyItemId}`);
+  console.log(`======================================================\n`);
+
+  if (!summary.legacyItemExists) {
+    console.error(`❌ Legacy item ${summary.legacyItemId} not found.`);
+  } else {
+    console.log(`✅ Found legacy item document.`);
   }
 
-  const legacyData = itemDoc.data();
-  console.log(`✅ Found legacy item document.`);
-
-  // Object ID normalization check
-  const objectId = legacyItemId.toUpperCase();
-  console.log(`Expected normalized Object ID: ${objectId}`);
-
-  // Fetch normalized object
-  const objectDoc = await db.collection('objects').doc(objectId).get();
-  if (!objectDoc.exists) {
-    console.warn(`⚠️ Normalized object ${objectId} not found.`);
+  console.log(`Expected normalized Object ID: ${summary.expectedNormalizedObjectId}`);
+  if (!summary.normalizedObjectExists) {
+    console.warn(`⚠️ Normalized object ${summary.expectedNormalizedObjectId} not found.`);
   } else {
     console.log(`✅ Normalized object found.`);
-    const objData = objectDoc.data() || {};
-
-    // Check object.legacy.legacyItemId
-    if (objData.legacy?.legacyItemId === legacyItemId) {
-      console.log(`  - Legacy reference preserved: ${objData.legacy.legacyItemId}`);
+    if (summary.legacyItemIdMatches) {
+      console.log(`  - Legacy reference preserved: ${summary.legacyItemId}`);
     } else {
       console.warn(`  - ⚠️ Legacy reference missing or mismatched!`);
     }
 
-    // Image checks
-    if (objData.primaryImageUrl) console.log(`  - primaryImageUrl populated.`);
-    if (objData.primaryImageId) console.log(`  - primaryImageId populated.`);
+    if (summary.primaryImageUrlPresent) console.log(`  - primaryImageUrl populated.`);
+    if (summary.primaryImageIdPresent) console.log(`  - primaryImageId populated.`);
 
-    // Ownership
-    if (objData.ownerId) {
+    if (summary.ownerIdPresent) {
        console.log(`  - ownerId populated.`);
     } else {
        console.warn(`  - ⚠️ ownerId missing!`);
     }
   }
 
-  // Check bindings
-  const bindingsSnapshot = await db.collection('objectIdentifierBindings')
-    .where('objectId', '==', objectId)
-    .get();
+  console.log(`\nFound ${summary.countObjectIdentifierBindings} binding(s) for object.`);
+  console.log(`Found ${summary.countObjectImages} image(s) for object.`);
+  console.log(`Found ${summary.countObjectEvents} event(s) for object.`);
 
-  console.log(`\nFound ${bindingsSnapshot.size} binding(s) for object.`);
-  for (const bDoc of bindingsSnapshot.docs) {
-    console.log(`  - Binding: ${bDoc.id} (status: ${bDoc.data().status})`);
-  }
-
-  // Check images
-  const imagesSnapshot = await db.collection('objectImages')
-    .where('objectId', '==', objectId)
-    .get();
-  console.log(`\nFound ${imagesSnapshot.size} image(s) for object.`);
-
-  // Check events
-  const eventsSnapshot = await db.collection('objectEvents')
-    .where('objectId', '==', objectId)
-    .get();
-  console.log(`\nFound ${eventsSnapshot.size} event(s) for object.`);
-
-  // Legacy field checks
   console.log(`\n--- Legacy Specific Fields ---`);
-  if (legacyData?.bluetoothTags) {
-     console.log(`🔹 bluetoothTags field exists in legacy item (Count: ${legacyData.bluetoothTags.length}). [Intentionally keeping raw values hidden]`);
+  if (summary.bluetoothTagsExists) {
+     console.log(`🔹 bluetoothTags field exists in legacy item (Count: ${summary.countBluetoothTags}). [Intentionally keeping raw values hidden]`);
   } else {
      console.log(`🔹 No bluetoothTags field in legacy item.`);
   }
 
-  if (legacyData?.tagType) {
-    console.log(`🔹 tagType: ${legacyData.tagType}`);
+  if (summary.tagTypeExists) {
+    console.log(`🔹 tagType: ${summary.tagTypeValue}`);
   }
 
-  console.log(`\nFinished audit for ${legacyItemId}\n`);
+  if (summary.warnings.length > 0) {
+    console.log(`\n--- ⚠️ Warnings ---`);
+    for (const w of summary.warnings) {
+      console.log(` - ${w}`);
+    }
+  }
+
+  console.log(`\nFinished audit for ${summary.legacyItemId}\n`);
 }
 
 async function main() {
-  const args = process.argv.slice(2);
-  if (args.length === 0) {
-    console.error("Usage: cd functions && node scripts/audit-legacy-items.mjs <legacyItemId1> [legacyItemId2] ...");
+  const argv = process.argv.slice(2);
+  let parsed;
+  try {
+    parsed = parseAuditArgs(argv);
+  } catch (err) {
+    console.error(`Usage Error: ${err.message}`);
+    console.error("Usage: cd functions && node scripts/audit-legacy-items.mjs [--json | --markdown] <legacyItemId1> [legacyItemId2] ...");
     console.error("This script is read-only and requires explicit legacy item IDs.");
     process.exit(1);
   }
 
-  console.log("Starting Read-Only Legacy Item Audit...");
+  const summaries = [];
+  for (const legacyItemId of parsed.itemIds) {
+    const summary = await auditLegacyItem(legacyItemId);
+    summaries.push(summary);
+  }
 
-  for (const legacyItemId of args) {
-    await auditLegacyItem(legacyItemId);
+  if (parsed.json) {
+    console.log(formatJsonOutput(summaries));
+  } else if (parsed.markdown) {
+    console.log(formatMarkdownOutput(summaries));
+  } else {
+    for (const summary of summaries) {
+      printHumanReadable(summary);
+    }
   }
 }
 
