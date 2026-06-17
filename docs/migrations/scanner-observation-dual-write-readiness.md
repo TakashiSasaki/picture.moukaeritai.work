@@ -25,6 +25,10 @@ This readiness gate is specifically constrained to validation and documentation.
 - [Drift Closure Plan](entity-fact-projection-drift-closure-plan.json)
 - [Drift Audit](entity-fact-projection-drift-audit.json)
 
+## Runtime Contract Evidence
+
+- [Scanner Observation Dual-Write Runtime Contract Evidence](scanner-observation-dual-write-runtime-contract-evidence.md)
+
 ## Current Runtime Contract
 
 The new `observations` writes operate as a **shadow-dual-write**.

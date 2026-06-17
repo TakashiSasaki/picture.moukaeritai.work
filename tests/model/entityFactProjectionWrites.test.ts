@@ -231,21 +231,66 @@ describe('entityFactProjectionWrites', () => {
   });
 
   describe('buildMarkerObservedWrite', () => {
-    it('creates marker/object/user/device participants when provided', () => {
+    it('builds marker-only observation correctly and strips undefined', () => {
       const ts = Timestamp.now();
       const result = buildMarkerObservedWrite({
         observationId: 'obs-1',
+        markerKey: 'mk-1',
+        actorUid: 'user-1',
+        receivedAt: ts,
+        observedAt: ts,
+        source: 'qr',
+      });
+      expect(result.collection).toBe('observations');
+      expect(result.id).toBe('obs-1');
+      expect(result.path).toBe('observations/obs-1');
+
+      expect(result.data.observationId).toBe('obs-1');
+      expect(result.data.identifierKey).toBe('mk-1');
+      expect(result.data.ownerId).toBe('user-1');
+      expect(result.data.observerKind).toBe('user');
+      expect(result.data.observerUid).toBe('user-1');
+      expect(result.data.observedAt).toBe(ts);
+      expect(result.data.receivedAt).toBe(ts);
+      expect(result.data.createdAt).toBe(ts);
+      expect(result.data.source).toBe('qr');
+      expect(result.data.observationType).toBe('scan');
+
+      expect(result.data.objectId).toBeUndefined(); // Should be stripped
+      expect('objectId' in result.data).toBe(false);
+      expect((result.data as any).participants).toBeUndefined();
+      expect((result.data as any).time).toBeUndefined();
+      expect((result.data as any).provenance).toBeUndefined();
+    });
+
+    it('builds marker + object observation correctly', () => {
+      const ts = Timestamp.now();
+      const result = buildMarkerObservedWrite({
+        observationId: 'obs-2',
         markerKey: 'mk-1',
         objectId: 'obj-1',
         actorUid: 'user-1',
         receivedAt: ts,
         observedAt: ts,
-        source: 'qr'
+        source: 'nfc'
       });
       expect(result.data.observationType).toBe('scan');
+      expect(result.data.objectId).toBe('obj-1');
+      expect(result.data.source).toBe('nfc');
+    });
 
-
-
+    it('maps payload to metadata', () => {
+      const ts = Timestamp.now();
+      const result = buildMarkerObservedWrite({
+        observationId: 'obs-3',
+        markerKey: 'mk-1',
+        actorUid: 'user-1',
+        receivedAt: ts,
+        observedAt: ts,
+        source: 'manual',
+        payload: { rawValue: '123' }
+      });
+      expect(result.data.metadata).toEqual({ rawValue: '123' });
     });
   });
 

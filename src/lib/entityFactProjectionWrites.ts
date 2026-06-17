@@ -351,8 +351,9 @@ export function buildMarkerObservedWrite(input: {
   };
 
   return {
+    collection: 'observations',
     id: input.observationId,
-    collection: 'observations' as const,
+    path: `observations/${input.observationId}`,
     data: stripUndefinedDeep(data)
   };
 }

@@ -7,6 +7,16 @@ export function isScannerObservationDualWriteEnabled(): boolean {
   return import.meta.env.VITE_ENABLE_SCANNER_OBSERVATION_DUAL_WRITE === 'true';
 }
 
+type ClientObservationSource = 'qr' | 'nfc' | 'manual' | 'barcode' | 'camera';
+
+function isClientObservationSource(source: string): source is ClientObservationSource {
+  return source === 'qr'
+    || source === 'nfc'
+    || source === 'manual'
+    || source === 'barcode'
+    || source === 'camera';
+}
+
 export async function writeScannerObservationShadow(input: {
   markerKey: string;
   objectId?: string;
@@ -80,6 +90,10 @@ export async function writeScannerObservationShadow(input: {
     const serverTime = serverTimestamp() as Timestamp;
     const payload = input.scannedValue ? { rawValue: input.scannedValue } : undefined;
 
+    if (!isClientObservationSource(input.source)) {
+      return { status: 'failed', reason: 'Unsupported observation source' };
+    }
+
     const builderOutput = buildMarkerObservedWrite({
       observationId,
       markerKey: input.markerKey,
@@ -87,7 +101,7 @@ export async function writeScannerObservationShadow(input: {
       actorUid: input.actorUid,
       observedAt: now,
       receivedAt: serverTime,
-      source: input.source as any,
+      source: input.source,
       payload,
     });
 

@@ -1,0 +1,17 @@
+{
+  "evidenceType": "scanner-observation-dual-write-runtime-contract-evidence",
+  "status": "local-evidence-only",
+  "featureFlagEnabledInThisStride": false,
+  "runtimeDefaultBehaviorChanged": false,
+  "indexesChanged": false,
+  "migrationExecuted": false,
+  "firebaseProductionCallsAdded": false,
+  "firestoreWritesOutsideEmulator": false,
+  "readSwitchingAuthorized": false,
+  "rolloutApproved": false,
+  "legacyIdentifierObservationsChanged": false,
+  "objectEventsAuthoritative": true,
+  "targetObservationsRulesHardened": true,
+  "builderFlatSchemaAligned": true,
+  "runtimeShadowWriterFeatureGated": true
+}

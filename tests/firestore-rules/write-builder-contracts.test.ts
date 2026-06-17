@@ -149,7 +149,6 @@ describe('Write Builder Contracts', () => {
       });
 
       const db = testEnv.authenticatedContext(ownerUid).firestore();
-      console.log("builderOutput.data for success:", JSON.stringify(builderOutput.data));
       await assertSucceeds(setDoc(doc(db, 'observations', builderOutput.id), builderOutput.data));
     });
 
@@ -234,6 +233,30 @@ describe('Write Builder Contracts', () => {
       const builderOutput = buildMarkerObservedWrite({
         observationId: 'obs-5',
         markerKey,
+        actorUid: ownerUid,
+        observedAt: now,
+        receivedAt: now,
+        source: 'qr',
+      });
+
+      const db = testEnv.authenticatedContext(ownerUid).firestore();
+      await assertFails(setDoc(doc(db, 'observations', builderOutput.id), builderOutput.data));
+    });
+
+    it('Fails when objectId is included but object does not exist', async () => {
+      const uniqueObjectIdMissing = 'obs-object-unique-missing';
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        const adminDb = context.firestore();
+        // Marker owned by user
+        await setDoc(doc(adminDb, 'markers', markerKey), { ownerId: ownerUid });
+        // Intentional: object not seeded
+      });
+
+      const now = serverTimestamp() as Timestamp;
+      const builderOutput = buildMarkerObservedWrite({
+        observationId: 'obs-5b',
+        markerKey,
+        objectId: uniqueObjectIdMissing,
         actorUid: ownerUid,
         observedAt: now,
         receivedAt: now,

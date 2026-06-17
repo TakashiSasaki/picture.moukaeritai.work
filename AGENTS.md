@@ -500,5 +500,6 @@ The application has transitioned from a simple `items` collection to a normalize
 - The Controlled Execution Review Contract generates a formalized checklist, risk register, and approval boundary local-only artifact. It enforces identical invariants and is explicitly *not* execution approval.
 - Scanner observation dual-write readiness artifacts are planning/local-validation only.
 - Scanner observation target rules hardening design artifacts are planning/local-validation only. Passing target rules hardening design validation does not modify Firestore rules, deploy rules, enable the feature flag, authorize runtime dual-write rollout, or authorize UI read switching. Actual Firestore rules changes require a separate explicit PR.
+- Scanner observation dual-write runtime contract evidence is gathered locally. Passing the runtime contract evidence check does not enable the feature flag and does not authorize rollout, backfill, or UI read switching.
 - Passing readiness validation does not enable the feature flag and does not authorize rollout, backfill, or UI read switching.
 - The scanner legacy identifier lookup and objectEvents write remain authoritative until a separate explicit migration/read-switching PR.

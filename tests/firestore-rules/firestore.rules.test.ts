@@ -519,7 +519,6 @@ describe('Firestore Rules Baseline', () => {
       };
 
       it('owner-can-create-valid-observation', async () => {
-        console.log("validObservation", JSON.stringify(validObservation));
         await testEnv.withSecurityRulesDisabled(async (context) => {
           await setDoc(doc(context.firestore(), 'markers', markerKey), { ownerId: ownerUid });
         });
@@ -606,6 +605,17 @@ describe('Firestore Rules Baseline', () => {
         await assertSucceeds(deleteDoc(doc(adminDb, 'observations', 'o1')));
       });
 
+      it('admin-read-allowed', async () => {
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          await setDoc(doc(context.firestore(), 'observations', 'o1'), validObservation);
+        });
+        const adminDb = testEnv.authenticatedContext('admin-uid').firestore();
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+           await setDoc(doc(context.firestore(), 'admins', 'admin-uid'), { role: 'admin' });
+        });
+        await assertSucceeds(getDoc(doc(adminDb, 'observations', 'o1')));
+      });
+
       it('read-switching-not-authorized', async () => {
         const db = testEnv.authenticatedContext(ownerUid).firestore();
         await assertFails(getDoc(doc(db, 'observations', 'o1')));
@@ -621,6 +631,65 @@ describe('Firestore Rules Baseline', () => {
            time: { observedAt: serverTimestamp(), receivedAt: serverTimestamp() }
         };
         await assertFails(setDoc(doc(db, 'observations', 'o1'), projectionWrite));
+      });
+
+      it('objectId present and owned object succeeds', async () => {
+        const observationId = 'obs-owned-object-succeeds';
+        const uniqueMarkerKey = 'marker-owned-object-succeeds';
+        const uniqueObjectId = 'object-owned-object-succeeds';
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          const adminDb = context.firestore();
+          await setDoc(doc(adminDb, 'markers', uniqueMarkerKey), { ownerId: ownerUid });
+          await setDoc(doc(adminDb, 'objects', uniqueObjectId), { ownerId: ownerUid });
+        });
+
+        const db = testEnv.authenticatedContext(ownerUid).firestore();
+        await assertSucceeds(setDoc(doc(db, 'observations', observationId), {
+          ...validObservation,
+          observationId,
+          identifierKey: uniqueMarkerKey,
+          objectId: uniqueObjectId
+        }));
+      });
+
+      it('objectId present and missing object denied', async () => {
+        const observationId = 'obs-missing-object-denied';
+        const uniqueMarkerKey = 'marker-missing-object-denied';
+        const uniqueObjectId = 'object-missing-object-denied';
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          const adminDb = context.firestore();
+          await setDoc(doc(adminDb, 'markers', uniqueMarkerKey), { ownerId: ownerUid });
+        });
+
+        const db = testEnv.authenticatedContext(ownerUid).firestore();
+        await assertFails(setDoc(doc(db, 'observations', observationId), {
+          ...validObservation,
+          observationId,
+          identifierKey: uniqueMarkerKey,
+          objectId: uniqueObjectId
+        }));
+      });
+
+      it('objectId present and non-owned object denied', async () => {
+        const observationId = 'obs-non-owned-object-denied';
+        const uniqueMarkerKey = 'marker-non-owned-object-denied';
+        const uniqueObjectId = 'object-non-owned-object-denied';
+
+        await testEnv.withSecurityRulesDisabled(async (context) => {
+          const adminDb = context.firestore();
+          await setDoc(doc(adminDb, 'markers', uniqueMarkerKey), { ownerId: ownerUid });
+          await setDoc(doc(adminDb, 'objects', uniqueObjectId), { ownerId: 'other-uid' });
+        });
+
+        const db = testEnv.authenticatedContext(ownerUid).firestore();
+        await assertFails(setDoc(doc(db, 'observations', observationId), {
+          ...validObservation,
+          observationId,
+          identifierKey: uniqueMarkerKey,
+          objectId: uniqueObjectId
+        }));
       });
     });
 
