@@ -127,7 +127,7 @@ export default function DeveloperFirestoreModelDoc() {
         <section className="bg-[var(--surface-container)] border border-[var(--outline)] rounded-2xl p-6">
           <h3 className="text-lg font-bold text-[var(--on-surface)] mb-4 text-amber-500">Legacy / Compatibility Notes</h3>
           <p className="text-sm text-[var(--on-surface)]">
-            While the architecture is moving to the Entity / Fact / Projection model, terms like "Identifier" and "Binding" are preserved in documentation because they still exist in the current runtime model. They map directly to "Marker" and "Association" respectively in the target architecture.
+            While the architecture is moving to the Entity / Fact / Projection model, terms like "Identifier", "Binding", and "locations" are preserved in documentation because they still exist in the current runtime model. They map directly to "Marker", "Association", and "Place" respectively in the target architecture.
           </p>
         </section>
 
