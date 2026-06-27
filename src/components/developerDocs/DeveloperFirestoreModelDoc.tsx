@@ -105,7 +105,11 @@ export default function DeveloperFirestoreModelDoc() {
 
         <section className="bg-[var(--surface-container)] border border-[var(--outline)] rounded-2xl p-6">
           <h3 className="text-lg font-bold text-[var(--on-surface)] mb-4 text-emerald-500">Target Fact Collections</h3>
-          <p className="text-sm text-[var(--on-surface-variant)] mb-4">These represent the migration destinations for temporal operational history. <strong>Note:</strong> Pure builder helpers now exist for target Entity / Fact / Projection payloads, but runtime components do not call them until the migration plan phase explicitly allows dual-write behavior. They are not production-active read/write paths. Phase 7E migration execution remains blocked.</p>
+          <p className="text-sm text-[var(--on-surface-variant)] mb-4">
+            These represent the migration destinations for temporal operational history.
+            <strong>Note:</strong> Pure builder helpers exist for target Entity / Fact / Projection payloads.
+            <strong>Phase 2 (Controlled dual-write for scanner observations)</strong> is currently In Progress. However, the associated feature flag (<code>VITE_ENABLE_SCANNER_OBSERVATION_DUAL_WRITE</code>) is currently disabled and is strictly gated by local validation artifacts. The runtime paths remain blocked for production dual-write or read switching until explicitly rolled out via PR. Phase 7E migration execution remains blocked.
+          </p>
           <ul className="space-y-2 text-sm text-[var(--on-surface)] list-disc pl-5">
             <li><strong>associations:</strong> Migration target (currently implemented as <code>objectIdentifierBindings</code>).</li>
             <li><strong>observations:</strong> Migration target (currently implemented as <code>identifierObservations</code>).</li>
