@@ -95,6 +95,10 @@ export default function DeveloperAbstractModelDoc() {
             <strong className="text-orange-500 block mb-1">Legacy Item</strong>
             <p className="text-[var(--on-surface-variant)]">The Tag 1.0 flat model where tags and history were embedded directly into the item object.</p>
           </li>
+          <li>
+            <strong className="text-orange-500 block mb-1">Phase 7D.10 Additive Fields</strong>
+            <p className="text-[var(--on-surface-variant)]">Stage 1 additive fields (<code>rawPayload</code>, <code>identityModelVersion</code>, <code>identitySchemaVersion</code>, <code>canonicalizationVersion</code>) are now conceptually introduced. However, <strong>Phase 7E migration execution remains blocked</strong>, so runtime components do not yet execute broad updates for these properties.</p>
+          </li>
         </ul>
 
         <h4 className="font-bold text-[var(--on-surface)] mb-2">Semantic Identifier Identity (Legacy)</h4>

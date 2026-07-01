@@ -16,6 +16,11 @@ export default function DeveloperRoutesDoc() {
           Routes are categorized by their access levels: Public, Authenticated, and Admin.
           This page provides a static summary based on the internal route catalog.
         </p>
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 text-sm mt-4">
+          <p className="text-[var(--on-surface)]">
+            <strong>Note:</strong> Migration execution paths (e.g., Phase 7E execution, broad backfills, and UI read-switching) are explicitly blocked. Legacy migration UI routes are deprecated and maintained only for informational purposes.
+          </p>
+        </div>
       </section>
 
       <div className="space-y-8">
