@@ -76,6 +76,7 @@ export function ImageMetadataDialog() {
             </h3>
             <button
               onClick={() => setIsOpen(false)}
+              aria-label="Close dialog"
               className="p-2 rounded-full hover:bg-[var(--surface-container-highest)] text-[var(--on-surface-variant)] transition-colors"
             >
               <X size={20} />
