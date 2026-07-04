@@ -56,7 +56,7 @@ export default function DeveloperDataModelDoc() {
         </ul>
         <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-sm mt-4">
           <p className="text-[var(--on-surface)]">
-            <strong>Status Update:</strong> Phase 7E migration execution (Imported Observation Execution) remains blocked and is explicitly documented as such in migration statuses.
+            <strong>Status Update:</strong> Phase 7D.10 Stage 1 additive fields implementation is completed. Phase 7E migration execution (Imported Observation Execution) remains blocked and is explicitly documented as such in migration statuses.
           </p>
         </div>
       </section>
