@@ -64,6 +64,7 @@ export default function DeveloperDocsOverview() {
               <li><code>npm run lint</code> - Run TypeScript type checking and linting.</li>
               <li><code>npm run test</code> - Run unit tests via Vitest.</li>
               <li><code>npm run test:rules</code> - Run Firestore rules emulator tests (requires Java).</li>
+              <li><code>npm run test:coverage</code> - Run unit tests with coverage reporting.</li>
               <li><code>npm run build</code> - Build the Vite application for production (includes PWA icon generation).</li>
             </ul>
           </div>
@@ -82,6 +83,9 @@ export default function DeveloperDocsOverview() {
             <ul className="list-disc list-inside text-xs text-[var(--on-surface-variant)] space-y-1 mt-2">
               <li><code>npm run ops:validate-efp-drift-audit</code> - Validates the EFP structural drift documentation.</li>
               <li><code>npm run ops:validate-scanner-observation-dual-write-readiness</code> - Validates planning artifacts for the target implementation.</li>
+              <li><code>npm run ops:validate-scanner-observation-target-rules-hardening-design</code> - Evaluates JSON design artifacts for target observations rules to confirm safety constraints.</li>
+              <li><code>npm run ops:validate-scanner-observation-dual-write-runtime-contract-evidence</code> - Validates runtime contract evidence artifacts for scanner observations ensuring constraints like feature flags are disabled.</li>
+              <li><code>npm run ops:validate-scanner-observation-dual-write-rollout-design-gate</code> - Validates scanner observation dual-write rollout design gate artifacts to strictly enforce safety invariants.</li>
             </ul>
           </div>
         </div>

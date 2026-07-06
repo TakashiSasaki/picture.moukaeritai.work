@@ -54,9 +54,12 @@ export default function DeveloperDataModelDoc() {
           <li><strong>Observation / Measurement facts:</strong> Normalizing how user sightings, background scans, and telemetry enter the system securely as immutable Facts.</li>
           <li><strong>Projection summaries:</strong> Utilizing derived, easily queryable read models (like ObjectSummary or MarkerSummary) built from underlying Facts and Entities.</li>
         </ul>
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-sm mt-4">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 text-sm mt-4 space-y-2">
           <p className="text-[var(--on-surface)]">
             <strong>Status Update:</strong> Phase 7E migration execution (Imported Observation Execution) remains blocked and is explicitly documented as such in migration statuses.
+          </p>
+          <p className="text-[var(--on-surface)]">
+            Scanner observation dual-write functionality is feature-gated by the <code>VITE_ENABLE_SCANNER_OBSERVATION_DUAL_WRITE</code> flag, which is currently disabled. Planning and local validation artifacts are complete, but this does not authorize feature flag enablement, runtime rollout, or UI read switching.
           </p>
         </div>
       </section>
