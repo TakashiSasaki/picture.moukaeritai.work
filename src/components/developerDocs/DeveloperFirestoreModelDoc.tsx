@@ -39,6 +39,7 @@ export default function DeveloperFirestoreModelDoc() {
               <p className="text-xs text-[var(--on-surface-variant)] mb-2"><strong>ID:</strong> Deterministic UUIDv5 (matches <code>identifierKey</code> field).</p>
               <p className="text-sm text-[var(--on-surface)]">
                 Legacy/current implementation collection. Conceptually maps to markers. Lookup records for scanning. Currently, <code>ownerId</code> remains required for writes due to legacy rules. <code>objectId</code> is preserved as a legacy reference.
+                Phase 7D.10 Stage 1 introduced additive fields (<code>rawPayload</code>, <code>identityModelVersion</code>, <code>identitySchemaVersion</code>, <code>canonicalizationVersion</code>) to identifiers.
               </p>
             </div>
 
