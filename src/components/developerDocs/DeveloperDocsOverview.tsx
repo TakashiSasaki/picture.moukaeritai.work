@@ -63,7 +63,9 @@ export default function DeveloperDocsOverview() {
               <li><code>npm ci</code> - Install root dependencies deterministically (preferred over <code>npm install</code> unless updating lockfile).</li>
               <li><code>npm run lint</code> - Run TypeScript type checking and linting.</li>
               <li><code>npm run test</code> - Run unit tests via Vitest.</li>
+              <li><code>npm run test:coverage</code> - Run unit tests with coverage reporting.</li>
               <li><code>npm run test:rules</code> - Run Firestore rules emulator tests (requires Java).</li>
+              <li><code>npm --prefix packages/efp-model run build</code> - Build the internal efp-model package (also supports typecheck and test:artifact).</li>
               <li><code>npm run build</code> - Build the Vite application for production (includes PWA icon generation).</li>
             </ul>
           </div>
