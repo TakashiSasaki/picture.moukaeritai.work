@@ -63,6 +63,7 @@ export default function DeveloperDocsOverview() {
               <li><code>npm ci</code> - Install root dependencies deterministically (preferred over <code>npm install</code> unless updating lockfile).</li>
               <li><code>npm run lint</code> - Run TypeScript type checking and linting.</li>
               <li><code>npm run test</code> - Run unit tests via Vitest.</li>
+              <li><code>npm run test:coverage</code> - Run unit tests with coverage via Vitest.</li>
               <li><code>npm run test:rules</code> - Run Firestore rules emulator tests (requires Java).</li>
               <li><code>npm run build</code> - Build the Vite application for production (includes PWA icon generation).</li>
             </ul>
@@ -80,8 +81,24 @@ export default function DeveloperDocsOverview() {
           <div>
             <h4 className="font-bold text-sm text-[var(--on-surface)] mt-4">Operational Validation Commands</h4>
             <ul className="list-disc list-inside text-xs text-[var(--on-surface-variant)] space-y-1 mt-2">
+              <li><code>npm run ops:recompute-projection</code> - Recompute projection summary.</li>
+              <li><code>npm run ops:reconcile-projection</code> - Reconcile projection summaries.</li>
+              <li><code>npm run ops:report-projection-reconciliation</code> - Report projection reconciliation.</li>
+              <li><code>npm run ops:plan-projection-canary-writes</code> - Plan projection canary writes.</li>
+              <li><code>npm run ops:validate-projection-canary-writes</code> - Validate projection canary writes.</li>
+              <li><code>npm run ops:assess-projection-backfill-readiness</code> - Assess projection backfill readiness.</li>
+              <li><code>npm run ops:plan-projection-backfill</code> - Plan projection backfill.</li>
+              <li><code>npm run ops:prepare-projection-backfill-operation</code> - Prepare projection backfill operation.</li>
+              <li><code>npm run ops:validate-projection-backfill-operation</code> - Validate projection backfill operation.</li>
+              <li><code>npm run ops:assess-projection-backfill-execution-design</code> - Assess projection backfill execution design.</li>
+              <li><code>npm run ops:prepare-projection-backfill-controlled-execution-design</code> - Prepare projection backfill controlled execution design.</li>
+              <li><code>npm run ops:prepare-projection-backfill-controlled-execution-review-contract</code> - Prepare projection backfill controlled execution review contract.</li>
               <li><code>npm run ops:validate-efp-drift-audit</code> - Validates the EFP structural drift documentation.</li>
+              <li><code>npm run ops:validate-efp-drift-closure-plan</code> - Validate EFP drift closure plan.</li>
               <li><code>npm run ops:validate-scanner-observation-dual-write-readiness</code> - Validates planning artifacts for the target implementation.</li>
+              <li><code>npm run ops:validate-scanner-observation-target-rules-hardening-design</code> - Validate scanner observation target rules hardening design.</li>
+              <li><code>npm run ops:validate-scanner-observation-dual-write-runtime-contract-evidence</code> - Validate scanner observation dual-write runtime contract evidence.</li>
+              <li><code>npm run ops:validate-scanner-observation-dual-write-rollout-design-gate</code> - Validate scanner observation dual-write rollout design gate.</li>
             </ul>
           </div>
         </div>
